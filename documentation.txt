@@ -1,0 +1,264 @@
+# School Management System - NestJS
+
+A comprehensive School Management System built with **NestJS**, **TypeScript**, **PostgreSQL**, and **TypeORM**.
+
+## 🚀 Features
+
+### Core Modules
+
+| Module | Description |
+|--------|-------------|
+| **Authentication & Authorization** | JWT-based authentication with role-based access control |
+| **Users & Roles** | User management with multiple roles (Super Admin, Admin, Teacher, Student, Parent, Accountant) |
+| **Students** | Complete student profile management with parent information |
+| **Teachers** | Teacher profiles with qualification and subject assignments |
+| **Classes / Grades** | Class management with capacity and teacher assignment |
+| **Subjects** | Subject management with credit hours and mandatory flags |
+| **Enrollments** | Student-class enrollment tracking by academic year |
+| **Attendance** | Daily attendance with status tracking and bulk operations |
+| **Exams & Results** | Exam scheduling with automatic grade calculation |
+| **Fees & Payments** | Fee structure and payment tracking with receipt generation |
+| **Notifications** | In-app notifications with broadcast capability |
+
+## 📁 Project Structure
+
+```
+src/
+├── auth/                    # Authentication module
+│   ├── dto/                 # Login & Register DTOs
+│   ├── strategies/          # JWT Strategy
+│   └── ...
+├── users/                   # Users module
+│   ├── dto/                 # User DTOs
+│   ├── entities/            # User entity
+│   └── ...
+├── students/                # Students module
+├── teachers/                # Teachers module
+├── classes/                 # Classes/Grades module
+├── subjects/                # Subjects module
+├── enrollments/             # Enrollments module
+├── attendance/              # Attendance module
+├── exams/                   # Exams module
+├── results/                 # Results module
+├── fees/                    # Fees & Payments module
+├── notifications/           # Notifications module
+├── common/                  # Shared resources
+│   ├── decorators/          # Custom decorators (@Roles, @CurrentUser)
+│   ├── enums/               # Enumerations
+│   ├── filters/             # Exception filters
+│   ├── guards/              # Auth & Role guards
+│   └── interceptors/        # Response interceptors
+├── config/                  # Configuration files
+├── app.module.ts            # Root module
+└── main.ts                  # Application entry point
+```
+
+## 🛠️ Installation
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- PostgreSQL (v14 or higher)
+- npm or yarn
+
+### Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/school-management-system-nest.git
+   cd school-management-system-nest
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   Edit the `.env` file with your database credentials:
+   ```env
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USER=postgres
+   DB_PASSWORD=your_password
+   DB_NAME=school_management
+   JWT_SECRET=your-secret-key
+   ```
+
+4. **Create the database**
+   ```sql
+   CREATE DATABASE school_management;
+   ```
+
+5. **Run the application**
+   ```bash
+   # Development mode
+   npm run start:dev
+
+   # Production mode
+   npm run build
+   npm run start:prod
+   ```
+
+## 📚 API Endpoints
+
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Register a new user |
+| POST | `/api/auth/login` | Login and get JWT token |
+| GET | `/api/auth/profile` | Get current user profile |
+
+### Users
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/users` | Get all users (Admin) |
+| GET | `/api/users/:id` | Get user by ID |
+| POST | `/api/users` | Create new user (Admin) |
+| PATCH | `/api/users/:id` | Update user (Admin) |
+| DELETE | `/api/users/:id` | Delete user (Super Admin) |
+
+### Students
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/students` | Get all students |
+| GET | `/api/students/:id` | Get student by ID |
+| POST | `/api/students` | Create new student |
+| PATCH | `/api/students/:id` | Update student |
+| DELETE | `/api/students/:id` | Delete student |
+| PATCH | `/api/students/:id/assign-class/:classId` | Assign student to class |
+
+### Teachers
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/teachers` | Get all teachers |
+| GET | `/api/teachers/:id` | Get teacher by ID |
+| POST | `/api/teachers` | Create new teacher |
+| PATCH | `/api/teachers/:id` | Update teacher |
+| PATCH | `/api/teachers/:id/subjects` | Assign subjects to teacher |
+
+### Classes
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/classes` | Get all classes |
+| GET | `/api/classes/:id` | Get class with students |
+| POST | `/api/classes` | Create new class |
+| PATCH | `/api/classes/:id/teacher/:teacherId` | Assign class teacher |
+
+### Subjects
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/subjects` | Get all subjects |
+| POST | `/api/subjects` | Create new subject |
+
+### Enrollments
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/enrollments` | Get all enrollments |
+| POST | `/api/enrollments` | Create enrollment |
+| GET | `/api/enrollments?studentId=:id` | Get student enrollments |
+
+### Attendance
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/attendance` | Mark attendance |
+| POST | `/api/attendance/bulk` | Bulk attendance marking |
+| GET | `/api/attendance/class/:classId?date=` | Get class attendance |
+| GET | `/api/attendance/stats/:studentId` | Get student stats |
+
+### Exams
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/exams` | Get all exams |
+| GET | `/api/exams/upcoming` | Get upcoming exams |
+| POST | `/api/exams` | Create new exam |
+
+### Results
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/results` | Enter result |
+| POST | `/api/results/bulk` | Bulk result entry |
+| GET | `/api/results?studentId=:id` | Get student results |
+
+### Fees & Payments
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/fees` | Get all fees |
+| POST | `/api/fees` | Create fee structure |
+| POST | `/api/fees/payments` | Record payment |
+| GET | `/api/fees/status/:studentId` | Get fee status |
+
+### Notifications
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/notifications/my` | Get my notifications |
+| POST | `/api/notifications/broadcast` | Broadcast notification |
+| PATCH | `/api/notifications/:id/read` | Mark as read |
+
+## 🔐 User Roles
+
+| Role | Permissions |
+|------|-------------|
+| `super_admin` | Full system access |
+| `admin` | Manage users, students, teachers, classes |
+| `teacher` | View students, mark attendance, enter results |
+| `student` | View own profile, results, attendance |
+| `parent` | View child's data |
+| `accountant` | Manage fees and payments |
+
+## 🧪 Testing
+
+```bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Test coverage
+npm run test:cov
+```
+
+## 📦 Database Tables
+
+- `users` - User authentication & profiles
+- `students` - Student information
+- `teachers` - Teacher information
+- `classes` - Class/Grade details
+- `subjects` - School subjects
+- `enrollments` - Student-Class relationships
+- `attendance` - Daily attendance records
+- `exams` - Exam schedules
+- `results` - Exam results
+- `fees` - Fee structures
+- `payments` - Payment records
+- `notifications` - System notifications
+
+## 🔧 Technologies
+
+- **NestJS** - Progressive Node.js framework
+- **TypeScript** - Type-safe JavaScript
+- **TypeORM** - ORM for TypeScript
+- **PostgreSQL** - Relational database
+- **Passport JWT** - Authentication
+- **class-validator** - DTO validation
+- **bcryptjs** - Password hashing
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 📞 Support
+
+For support, email support@schoolmanagement.com or open an issue.
