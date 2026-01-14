@@ -15,7 +15,7 @@ export class AuthService {
     async register(registerDto: RegisterDto) {
         const user = await this.usersService.create({
             ...registerDto,
-            role: UserRole.STUDENT, // Default role for registration
+            role: registerDto.role || UserRole.STUDENT,
         });
 
         const { password, ...result } = user;

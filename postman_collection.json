@@ -1,0 +1,387 @@
+{
+    "info": {
+        "name": "School Management System API",
+        "description": "Complete API collection for School Management System",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:3000/api"
+        },
+        {
+            "key": "token",
+            "value": ""
+        }
+    ],
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "1. Register User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@school.com\",\n  \"password\": \"admin123\",\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\",\n  \"phoneNumber\": \"+250788123456\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "2. Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.data && jsonData.data.accessToken) {",
+                                    "    pm.collectionVariables.set('token', jsonData.data.accessToken);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@school.com\",\n  \"password\": \"admin123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3. Get Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/profile",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "profile"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "Get All Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"teacher@school.com\",\n  \"password\": \"teacher123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Teacher\",\n  \"role\": \"teacher\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/users",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Classes",
+            "item": [
+                {
+                    "name": "Create Class",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Grade 10A\",\n  \"grade\": \"10\",\n  \"section\": \"A\",\n  \"academicYear\": \"2024-2025\",\n  \"capacity\": 40\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/classes",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "classes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Classes",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/classes",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "classes"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Subjects",
+            "item": [
+                {
+                    "name": "Create Subject",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Mathematics\",\n  \"code\": \"MATH101\",\n  \"description\": \"Basic Mathematics\",\n  \"creditHours\": 4,\n  \"isMandatory\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/subjects",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "subjects"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Subjects",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/subjects",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "subjects"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Students",
+            "item": [
+                {
+                    "name": "Create Student",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"student1@school.com\",\n  \"password\": \"student123\",\n  \"firstName\": \"James\",\n  \"lastName\": \"Doe\",\n  \"dateOfBirth\": \"2008-05-15\",\n  \"gender\": \"male\",\n  \"address\": \"123 Main Street, Kigali\",\n  \"admissionDate\": \"2024-01-15\",\n  \"guardianName\": \"Michael Doe\",\n  \"guardianPhone\": \"+250788111222\",\n  \"guardianEmail\": \"michael@email.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/students",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Students",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/students",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Teachers",
+            "item": [
+                {
+                    "name": "Create Teacher",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"mrsmith@school.com\",\n  \"password\": \"smith123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Smith\",\n  \"phoneNumber\": \"+250788333444\",\n  \"qualification\": \"Masters in Education\",\n  \"specialization\": \"Mathematics\",\n  \"joiningDate\": \"2020-01-15\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/teachers",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "teachers"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Teachers",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/teachers",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "teachers"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

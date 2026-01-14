@@ -37,6 +37,14 @@ async function bootstrap() {
   // Global response interceptor
   app.useGlobalInterceptors(new TransformInterceptor());
 
+  // DEBUG: Log all incoming requests
+  app.use((req, res, next) => {
+    console.log(`\n📝 [${req.method}] ${req.url}`);
+    console.log(`Headers: Content-Type = ${req.headers['content-type']}`);
+    console.log('Body:', JSON.stringify(req.body, null, 2));
+    next();
+  });
+
   // Swagger Configuration
   const swaggerConfig = new DocumentBuilder()
     .setTitle('School Management System API')

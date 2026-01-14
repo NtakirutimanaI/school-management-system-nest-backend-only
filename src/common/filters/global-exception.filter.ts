@@ -28,6 +28,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
                 message = responseObj.message || message;
                 errors = responseObj.errors || null;
             }
+        } else if ((exception as any).code === '23505') {
+            // Handle Postgres unique constraint violation
+            status = HttpStatus.CONFLICT;
+            // Extract the key that caused the violation if possible
+            const detail = (exception as any).detail;
+            message = detail ? `Duplicate entry: ${detail}` : 'Duplicate entry already exists';
+        } else {
+            // Log internal server errors
+            console.error('💥 Internal Server Error:', exception);
         }
 
         response.status(status).json({
