@@ -76,7 +76,7 @@ export class UsersController {
     }
 
     @Delete(':id')
-    @Roles(UserRole.SUPER_ADMIN)
+    @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
     @ApiOperation({ summary: 'Delete user by ID' })
     @ApiParam({ name: 'id', description: 'User UUID' })
     @ApiResponse({ status: 200, description: 'User successfully deleted' })
