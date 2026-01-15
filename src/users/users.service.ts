@@ -8,6 +8,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersQueryService } from './users.query.service';
+import { MailService } from '../mail/mail.service';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class UsersService {
     @InjectRepository(User) private readonly repo: Repository<User>,
     private readonly query: UsersQueryService,
     @InjectQueue('users') private readonly userQueue: Queue,
+    private readonly mailService: MailService,
   ) { }
 
   async create(dto: CreateUserDto): Promise<User> {
@@ -33,14 +35,20 @@ export class UsersService {
     });
     const saved = await this.repo.save(user);
 
-    // Skip queue if using mock, as BullMQ + ioredis-mock Lua scripts are incompatible
+    // Skip queue if using mock
     if (process.env.USE_REDIS_MOCK !== 'true') {
       try {
         const plainUser = { ...saved, createdAt: saved.createdAt.toISOString(), updatedAt: saved.updatedAt.toISOString() };
         await this.userQueue.add('send-welcome-email', { user: plainUser, token: resetToken, tempPassword });
       } catch (e) {
-        // Log error but allow registration to proceed
         console.error('Failed to queue welcome email:', e.message);
+      }
+    } else {
+      // Mock mode: Send email directly
+      try {
+        await this.mailService.sendUserWelcome(saved, resetToken, tempPassword);
+      } catch (e) {
+        console.error('Failed to send welcome email directly:', e.message);
       }
     }
 
