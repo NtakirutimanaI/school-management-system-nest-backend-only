@@ -37,10 +37,7 @@ async function bootstrap() {
       console.log('User already exists:', user.id);
     }
 
-    // 2. Create Teacher
-    // Check if teacher profile exists (by checking if any teacher has this userId, although the service doesn't have a findByUserId, we can just try to create and catch error if duplicate employeeId or similar)
-    // TeachersService.findOne requires teacherId.
-    // We'll trust the unique constraint or just try to create.
+    // Create Teacher Profile
 
     const createTeacherDto: CreateTeacherDto = {
       userId: user.id,

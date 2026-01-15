@@ -7,7 +7,6 @@ export class MailService {
   constructor(private mailerService: MailerService) { }
 
   async sendUserWelcome(user: User, token: string, tempPassword?: string) {
-    // In a real app, this URL would be from a frontend config
     const url = `http://localhost:3000/api/auth/reset-password?token=${token}`;
 
     await this.mailerService.sendMail({
