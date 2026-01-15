@@ -23,6 +23,7 @@ export class UsersService {
     if (dto.phoneNumber && await this.query.findByPhoneNumber(dto.phoneNumber)) {
       throw new ConflictException('Phone number exists');
     }
+
     const { password, resetTokenHash, resetToken, tempPassword } = await this.prepareCreds();
     const user = this.repo.create({
       ...dto,
@@ -31,7 +32,18 @@ export class UsersService {
       resetPasswordExpires: new Date(Date.now() + 2 * 60 * 60 * 1000),
     });
     const saved = await this.repo.save(user);
-    await this.userQueue.add('send-welcome-email', { user: saved, token: resetToken, tempPassword });
+
+    // Skip queue if using mock, as BullMQ + ioredis-mock Lua scripts are incompatible
+    if (process.env.USE_REDIS_MOCK !== 'true') {
+      try {
+        const plainUser = { ...saved, createdAt: saved.createdAt.toISOString(), updatedAt: saved.updatedAt.toISOString() };
+        await this.userQueue.add('send-welcome-email', { user: plainUser, token: resetToken, tempPassword });
+      } catch (e) {
+        // Log error but allow registration to proceed
+        console.error('Failed to queue welcome email:', e.message);
+      }
+    }
+
     return saved;
   }
 
