@@ -1,28 +1,35 @@
-import { IsUUID, IsDateString, IsArray, ValidateNested, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsUUID,
+  IsDateString,
+  IsArray,
+  ValidateNested,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { AttendanceStatus } from '../../common/enums/attendance-status.enum';
 
 class StudentAttendanceDto {
-    @IsUUID()
-    studentId: string;
+  @IsUUID()
+  studentId: string;
 
-    @IsEnum(AttendanceStatus)
-    @IsOptional()
-    status?: AttendanceStatus;
+  @IsEnum(AttendanceStatus)
+  @IsOptional()
+  status?: AttendanceStatus;
 
-    @IsOptional()
-    remarks?: string;
+  @IsOptional()
+  remarks?: string;
 }
 
 export class BulkAttendanceDto {
-    @IsUUID()
-    classId: string;
+  @IsUUID()
+  classId: string;
 
-    @IsDateString()
-    date: string;
+  @IsDateString()
+  date: string;
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => StudentAttendanceDto)
-    attendances: StudentAttendanceDto[];
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => StudentAttendanceDto)
+  attendances: StudentAttendanceDto[];
 }

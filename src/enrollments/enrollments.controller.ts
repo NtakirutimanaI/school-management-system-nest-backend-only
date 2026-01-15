@@ -1,23 +1,5 @@
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Delete,
-    UseGuards,
-    ParseUUIDPipe,
-    Query,
-} from '@nestjs/common';
-import {
-    ApiTags,
-    ApiOperation,
-    ApiResponse,
-    ApiBearerAuth,
-    ApiParam,
-    ApiQuery,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseUUIDPipe, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { EnrollmentsService } from './enrollments.service';
 import { CreateEnrollmentDto } from './dto/create-enrollment.dto';
 import { UpdateEnrollmentDto } from './dto/update-enrollment.dto';
@@ -31,65 +13,24 @@ import { UserRole } from '../common/enums/user-role.enum';
 @Controller('enrollments')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class EnrollmentsController {
-    constructor(private readonly enrollmentsService: EnrollmentsService) { }
+  constructor(private readonly service: EnrollmentsService) { }
 
-    @Post()
-    @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-    @ApiOperation({ summary: 'Enroll a student in a class' })
-    @ApiResponse({ status: 201, description: 'Student enrolled successfully' })
-    @ApiResponse({ status: 400, description: 'Invalid input or already enrolled' })
-    @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
-    create(@Body() createEnrollmentDto: CreateEnrollmentDto) {
-        return this.enrollmentsService.create(createEnrollmentDto);
-    }
+  @Post() @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  create(@Body() dto: CreateEnrollmentDto) { return this.service.create(dto); }
 
-    @Get()
-    @ApiOperation({ summary: 'Get all enrollments or filter by student/class' })
-    @ApiQuery({ name: 'studentId', required: false, description: 'Filter by student UUID' })
-    @ApiQuery({ name: 'classId', required: false, description: 'Filter by class UUID' })
-    @ApiResponse({ status: 200, description: 'Returns list of enrollments' })
-    findAll(
-        @Query('studentId') studentId?: string,
-        @Query('classId') classId?: string,
-    ) {
-        if (studentId) {
-            return this.enrollmentsService.findByStudent(studentId);
-        }
-        if (classId) {
-            return this.enrollmentsService.findByClass(classId);
-        }
-        return this.enrollmentsService.findAll();
-    }
+  @Get()
+  findAll(@Query('studentId') sId?: string, @Query('classId') cId?: string) {
+    if (sId) return this.service.findByStudent(sId);
+    if (cId) return this.service.findByClass(cId);
+    return this.service.findAll();
+  }
 
-    @Get(':id')
-    @ApiOperation({ summary: 'Get enrollment by ID' })
-    @ApiParam({ name: 'id', description: 'Enrollment UUID' })
-    @ApiResponse({ status: 200, description: 'Returns the enrollment' })
-    @ApiResponse({ status: 404, description: 'Enrollment not found' })
-    findOne(@Param('id', ParseUUIDPipe) id: string) {
-        return this.enrollmentsService.findOne(id);
-    }
+  @Get(':id') @ApiParam({ name: 'id', description: 'Enrollment UUID' })
+  findOne(@Param('id', ParseUUIDPipe) id: string) { return this.service.findOne(id); }
 
-    @Patch(':id')
-    @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-    @ApiOperation({ summary: 'Update enrollment by ID' })
-    @ApiParam({ name: 'id', description: 'Enrollment UUID' })
-    @ApiResponse({ status: 200, description: 'Enrollment successfully updated' })
-    @ApiResponse({ status: 404, description: 'Enrollment not found' })
-    update(
-        @Param('id', ParseUUIDPipe) id: string,
-        @Body() updateEnrollmentDto: UpdateEnrollmentDto,
-    ) {
-        return this.enrollmentsService.update(id, updateEnrollmentDto);
-    }
+  @Patch(':id') @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateEnrollmentDto) { return this.service.update(id, dto); }
 
-    @Delete(':id')
-    @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-    @ApiOperation({ summary: 'Delete enrollment by ID' })
-    @ApiParam({ name: 'id', description: 'Enrollment UUID' })
-    @ApiResponse({ status: 200, description: 'Enrollment successfully deleted' })
-    @ApiResponse({ status: 404, description: 'Enrollment not found' })
-    remove(@Param('id', ParseUUIDPipe) id: string) {
-        return this.enrollmentsService.remove(id);
-    }
+  @Delete(':id') @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  remove(@Param('id', ParseUUIDPipe) id: string) { return this.service.remove(id); }
 }

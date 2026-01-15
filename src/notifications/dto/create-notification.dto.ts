@@ -1,21 +1,27 @@
-import { IsString, IsUUID, IsOptional, IsEnum, IsObject } from 'class-validator';
+import {
+  IsString,
+  IsUUID,
+  IsOptional,
+  IsEnum,
+  IsObject,
+} from 'class-validator';
 import { NotificationType } from '../../common/enums/notification-type.enum';
 
 export class CreateNotificationDto {
-    @IsString()
-    title: string;
+  @IsString()
+  title: string;
 
-    @IsString()
-    message: string;
+  @IsString()
+  message: string;
 
-    @IsEnum(NotificationType)
-    @IsOptional()
-    type?: NotificationType;
+  @IsEnum(NotificationType)
+  @IsOptional()
+  type?: NotificationType;
 
-    @IsUUID()
-    userId: string;
+  @IsUUID()
+  userId: string;
 
-    @IsObject()
-    @IsOptional()
-    metadata?: Record<string, any>;
+  @IsObject()
+  @IsOptional()
+  metadata?: Record<string, any>;
 }

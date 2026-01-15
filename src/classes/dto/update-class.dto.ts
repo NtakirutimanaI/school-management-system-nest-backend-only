@@ -3,7 +3,7 @@ import { CreateClassDto } from './create-class.dto';
 import { IsBoolean, IsOptional } from 'class-validator';
 
 export class UpdateClassDto extends PartialType(CreateClassDto) {
-    @IsBoolean()
-    @IsOptional()
-    isActive?: boolean;
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }

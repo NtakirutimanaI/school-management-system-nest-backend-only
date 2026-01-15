@@ -1,39 +1,39 @@
 import {
-    IsString,
-    IsEnum,
-    IsDateString,
-    IsOptional,
-    IsNumber,
-    IsUUID,
+  IsString,
+  IsEnum,
+  IsDateString,
+  IsOptional,
+  IsNumber,
+  IsUUID,
 } from 'class-validator';
 import { Gender } from '../../common/enums/gender.enum';
 
 export class CreateTeacherDto {
-    @IsString()
-    employeeId: string;
+  @IsString()
+  employeeId: string;
 
-    @IsEnum(Gender)
-    gender: Gender;
+  @IsEnum(Gender)
+  gender: Gender;
 
-    @IsDateString()
-    dateOfBirth: string;
+  @IsDateString()
+  dateOfBirth: string;
 
-    @IsString()
-    @IsOptional()
-    address?: string;
+  @IsString()
+  @IsOptional()
+  address?: string;
 
-    @IsString()
-    @IsOptional()
-    qualification?: string;
+  @IsString()
+  @IsOptional()
+  qualification?: string;
 
-    @IsString()
-    @IsOptional()
-    specialization?: string;
+  @IsString()
+  @IsOptional()
+  specialization?: string;
 
-    @IsNumber()
-    @IsOptional()
-    salary?: number;
+  @IsNumber()
+  @IsOptional()
+  salary?: number;
 
-    @IsUUID()
-    userId: string;
+  @IsUUID()
+  userId: string;
 }

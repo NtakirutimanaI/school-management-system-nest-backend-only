@@ -1,65 +1,58 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import { UsersQueryService } from '../users/users.query.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UserRole } from '../common/enums/user-role.enum';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private readonly usersService: UsersService,
-        private readonly jwtService: JwtService,
-    ) { }
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly query: UsersQueryService,
+    private readonly jwtService: JwtService,
+  ) { }
 
-    async register(registerDto: RegisterDto) {
-        const user = await this.usersService.create({
-            ...registerDto,
-            role: registerDto.role || UserRole.STUDENT,
-        });
+  async register(dto: RegisterDto) {
+    const user = await this.usersService.create({ ...dto, role: dto.role || UserRole.STUDENT });
+    return { user: this.usersService.sanitizeUser(user) };
+  }
 
-        const { password, ...result } = user;
-        return {
-            user: result,
-            accessToken: this.generateToken(user.id, user.email, user.role),
-        };
-    }
+  async login(dto: LoginDto) {
+    const user = await this.query.findByEmail(dto.email);
+    if (!user || !(await this.usersService.validatePassword(user, dto.password)))
+      throw new UnauthorizedException('Invalid credentials');
 
-    async login(loginDto: LoginDto) {
-        const user = await this.usersService.findByEmail(loginDto.email);
+    if (!user.isActive) throw new UnauthorizedException('Account deactivated');
 
-        if (!user) {
-            throw new UnauthorizedException('Invalid credentials');
-        }
+    return {
+      user: this.usersService.sanitizeUser(user),
+      accessToken: this.generateToken(user.id, user.email, user.role),
+    };
+  }
 
-        const isPasswordValid = await this.usersService.validatePassword(
-            user,
-            loginDto.password,
-        );
+  async getProfile(userId: string) {
+    return this.usersService.sanitizeUser(await this.query.findOne(userId));
+  }
 
-        if (!isPasswordValid) {
-            throw new UnauthorizedException('Invalid credentials');
-        }
+  async resetPassword(token: string, pass: string) {
+    const hash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await this.query.findByResetToken(hash);
+    if (!user || !user.resetPasswordExpires || user.resetPasswordExpires < new Date())
+      throw new UnauthorizedException('Invalid or expired token');
 
-        if (!user.isActive) {
-            throw new UnauthorizedException('Account is deactivated');
-        }
+    await this.usersService.update(user.id, {
+      password: pass,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    } as any);
 
-        const { password, ...result } = user;
-        return {
-            user: result,
-            accessToken: this.generateToken(user.id, user.email, user.role),
-        };
-    }
+    return { message: 'Password reset successfully' };
+  }
 
-    async getProfile(userId: string) {
-        const user = await this.usersService.findOne(userId);
-        const { password, ...result } = user;
-        return result;
-    }
-
-    private generateToken(userId: string, email: string, role: UserRole): string {
-        const payload = { sub: userId, email, role };
-        return this.jwtService.sign(payload);
-    }
+  private generateToken(userId: string, email: string, role: UserRole): string {
+    return this.jwtService.sign({ sub: userId, email, role });
+  }
 }

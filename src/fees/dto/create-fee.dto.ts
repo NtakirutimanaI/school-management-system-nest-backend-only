@@ -1,36 +1,36 @@
 import {
-    IsString,
-    IsNumber,
-    IsOptional,
-    IsDateString,
-    IsBoolean,
-    IsUUID,
-    Min,
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsDateString,
+  IsBoolean,
+  IsUUID,
+  Min,
 } from 'class-validator';
 
 export class CreateFeeDto {
-    @IsString()
-    name: string;
+  @IsString()
+  name: string;
 
-    @IsString()
-    @IsOptional()
-    description?: string;
+  @IsString()
+  @IsOptional()
+  description?: string;
 
-    @IsNumber()
-    @Min(0)
-    amount: number;
+  @IsNumber()
+  @Min(0)
+  amount: number;
 
-    @IsString()
-    academicYear: string;
+  @IsString()
+  academicYear: string;
 
-    @IsDateString()
-    dueDate: string;
+  @IsDateString()
+  dueDate: string;
 
-    @IsBoolean()
-    @IsOptional()
-    isMandatory?: boolean;
+  @IsBoolean()
+  @IsOptional()
+  isMandatory?: boolean;
 
-    @IsUUID()
-    @IsOptional()
-    classId?: string;
+  @IsUUID()
+  @IsOptional()
+  classId?: string;
 }

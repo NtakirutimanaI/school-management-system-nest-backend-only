@@ -6,104 +6,38 @@ import { Exam } from '../exams/entities/exam.entity';
 import { CreateResultDto } from './dto/create-result.dto';
 import { UpdateResultDto } from './dto/update-result.dto';
 import { BulkResultDto } from './dto/bulk-result.dto';
+import { calculateGrade } from './results.calculator';
+import { ResultsQueryService } from './results.query.service';
 
 @Injectable()
 export class ResultsService {
-    constructor(
-        @InjectRepository(Result)
-        private readonly resultRepository: Repository<Result>,
-        @InjectRepository(Exam)
-        private readonly examRepository: Repository<Exam>,
-    ) { }
+  constructor(
+    @InjectRepository(Result) private readonly repo: Repository<Result>,
+    @InjectRepository(Exam) private readonly examRepo: Repository<Exam>,
+    private readonly query: ResultsQueryService,
+  ) { }
 
-    async create(createResultDto: CreateResultDto): Promise<Result> {
-        const existing = await this.resultRepository.findOne({
-            where: { studentId: createResultDto.studentId, examId: createResultDto.examId },
-        });
-        if (existing) {
-            throw new ConflictException('Result already exists for this student and exam');
-        }
+  async create(dto: CreateResultDto): Promise<Result> {
+    const ex = await this.repo.findOne({ where: { studentId: dto.studentId, examId: dto.examId } });
+    if (ex) throw new ConflictException('Result exists');
+    const exam = await this.examRepo.findOne({ where: { id: dto.examId } });
+    if (!exam) throw new NotFoundException('Exam not found');
+    return this.repo.save(this.repo.create({ ...dto, ...calculateGrade(dto.marksObtained, exam.totalMarks, exam.passingMarks) }));
+  }
 
-        const exam = await this.examRepository.findOne({ where: { id: createResultDto.examId } });
-        if (!exam) {
-            throw new NotFoundException('Exam not found');
-        }
+  async bulkCreate(dto: BulkResultDto): Promise<Result[]> {
+    const exam = await this.examRepo.findOne({ where: { id: dto.examId } });
+    if (!exam) throw new NotFoundException('Exam not found');
+    const rs = dto.results.map(r => this.repo.create({
+      ...r, examId: dto.examId, ...calculateGrade(r.marksObtained, exam.totalMarks, exam.passingMarks)
+    }));
+    return this.repo.save(rs);
+  }
 
-        const result = this.resultRepository.create({
-            ...createResultDto,
-            ...this.calculateGradeAndStatus(createResultDto.marksObtained, exam.totalMarks, exam.passingMarks),
-        });
-        return this.resultRepository.save(result);
-    }
+  async update(id: string, dto: UpdateResultDto) {
+    const r = await this.query.findOne(id);
+    return this.repo.save(Object.assign(r, dto));
+  }
 
-    async bulkCreate(bulkDto: BulkResultDto): Promise<Result[]> {
-        const exam = await this.examRepository.findOne({ where: { id: bulkDto.examId } });
-        if (!exam) {
-            throw new NotFoundException('Exam not found');
-        }
-
-        const results = bulkDto.results.map((r) =>
-            this.resultRepository.create({
-                studentId: r.studentId,
-                examId: bulkDto.examId,
-                marksObtained: r.marksObtained,
-                remarks: r.remarks,
-                ...this.calculateGradeAndStatus(r.marksObtained, exam.totalMarks, exam.passingMarks),
-            }),
-        );
-        return this.resultRepository.save(results);
-    }
-
-    private calculateGradeAndStatus(marks: number, total: number, passing: number) {
-        const percentage = (marks / total) * 100;
-        const isPassed = marks >= passing;
-        let grade = 'F';
-        if (percentage >= 90) grade = 'A+';
-        else if (percentage >= 80) grade = 'A';
-        else if (percentage >= 70) grade = 'B';
-        else if (percentage >= 60) grade = 'C';
-        else if (percentage >= 50) grade = 'D';
-        else if (percentage >= 40) grade = 'E';
-        return { percentage, isPassed, grade };
-    }
-
-    async findAll(): Promise<Result[]> {
-        return this.resultRepository.find({ relations: ['student', 'student.user', 'exam', 'exam.subject'] });
-    }
-
-    async findOne(id: string): Promise<Result> {
-        const result = await this.resultRepository.findOne({
-            where: { id },
-            relations: ['student', 'student.user', 'exam', 'exam.subject'],
-        });
-        if (!result) {
-            throw new NotFoundException(`Result with ID ${id} not found`);
-        }
-        return result;
-    }
-
-    async findByStudent(studentId: string): Promise<Result[]> {
-        return this.resultRepository.find({
-            where: { studentId },
-            relations: ['exam', 'exam.subject'],
-        });
-    }
-
-    async findByExam(examId: string): Promise<Result[]> {
-        return this.resultRepository.find({
-            where: { examId },
-            relations: ['student', 'student.user'],
-        });
-    }
-
-    async update(id: string, updateResultDto: UpdateResultDto): Promise<Result> {
-        const result = await this.findOne(id);
-        Object.assign(result, updateResultDto);
-        return this.resultRepository.save(result);
-    }
-
-    async remove(id: string): Promise<void> {
-        const result = await this.findOne(id);
-        await this.resultRepository.remove(result);
-    }
+  async remove(id: string) { await this.repo.remove(await this.query.findOne(id)); }
 }

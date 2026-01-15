@@ -1,26 +1,33 @@
-import { IsString, IsArray, IsOptional, IsEnum, IsObject } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  IsOptional,
+  IsEnum,
+  IsObject,
+} from 'class-validator';
 import { NotificationType } from '../../common/enums/notification-type.enum';
+import { UserRole } from '../../common/enums/user-role.enum';
 
 export class BroadcastNotificationDto {
-    @IsString()
-    title: string;
+  @IsString()
+  title: string;
 
-    @IsString()
-    message: string;
+  @IsString()
+  message: string;
 
-    @IsEnum(NotificationType)
-    @IsOptional()
-    type?: NotificationType;
+  @IsEnum(NotificationType)
+  @IsOptional()
+  type?: NotificationType;
 
-    @IsArray()
-    @IsOptional()
-    userIds?: string[];
+  @IsArray()
+  @IsOptional()
+  userIds?: string[];
 
-    @IsString()
-    @IsOptional()
-    targetRole?: string;
+  @IsEnum(UserRole)
+  @IsOptional()
+  targetRole?: UserRole;
 
-    @IsObject()
-    @IsOptional()
-    metadata?: Record<string, any>;
+  @IsObject()
+  @IsOptional()
+  metadata?: Record<string, any>;
 }

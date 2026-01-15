@@ -11,12 +11,5 @@ export class AppController {
   }
 
   @Get('health')
-  healthCheck() {
-    return {
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      service: 'School Management System API',
-      version: '1.0.0',
-    };
-  }
+  healthCheck() { return { status: 'up', time: new Date(), service: 'SMS-Backend' }; }
 }
