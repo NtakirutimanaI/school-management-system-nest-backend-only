@@ -23,6 +23,7 @@ import { FeesModule } from './fees/fees.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { MailModule } from './mail/mail.module';
 import { SocketsModule } from './common/sockets/sockets.module';
+import { CloudinaryModule } from './common/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -48,7 +49,7 @@ import { SocketsModule } from './common/sockets/sockets.module';
       }),
     }),
     AuthModule, UsersModule, StudentsModule, TeachersModule, ClassesModule, SubjectsModule,
-    EnrollmentsModule, AttendanceModule, ExamsModule, ResultsModule, FeesModule, NotificationsModule, MailModule, SocketsModule,
+    EnrollmentsModule, AttendanceModule, ExamsModule, ResultsModule, FeesModule, NotificationsModule, MailModule, SocketsModule, CloudinaryModule,
   ],
   controllers: [AppController], providers: [AppService],
 })

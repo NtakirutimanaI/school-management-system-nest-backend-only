@@ -49,4 +49,8 @@ export class CreateStudentDto {
   @IsUUID()
   @IsOptional()
   classId?: string;
+
+  @IsString()
+  @IsOptional()
+  profilePictureUrl?: string;
 }

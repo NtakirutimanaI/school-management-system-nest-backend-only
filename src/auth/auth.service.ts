@@ -40,6 +40,7 @@ export class AuthService {
   async resetPassword(token: string, pass: string) {
     const hash = crypto.createHash('sha256').update(token).digest('hex');
     const user = await this.query.findByResetToken(hash);
+
     if (!user || !user.resetPasswordExpires || user.resetPasswordExpires < new Date())
       throw new UnauthorizedException('Invalid or expired token');
 

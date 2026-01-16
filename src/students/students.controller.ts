@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseUUIDPipe, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseUUIDPipe, Query, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery, ApiConsumes } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -37,5 +38,21 @@ export class StudentsController {
   @Patch(':id/assign-class/:classId') @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
   assignToClass(@Param('id', ParseUUIDPipe) id: string, @Param('classId', ParseUUIDPipe) classId: string) {
     return this.service.assignToClass(id, classId);
+  }
+
+  @Post(':id/upload-profile-picture')
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Upload student profile picture' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'Student UUID' })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadProfilePicture(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+    return this.service.uploadProfilePicture(id, file);
   }
 }

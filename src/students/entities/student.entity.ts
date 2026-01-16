@@ -58,6 +58,9 @@ export class Student {
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
 
+  @Column({ name: 'profile_picture_url', nullable: true })
+  profilePictureUrl: string;
+
   @OneToOne(() => User, (user) => user.student, { eager: true })
   @JoinColumn({ name: 'user_id' })
   user: User;
