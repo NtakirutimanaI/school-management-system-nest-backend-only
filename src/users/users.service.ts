@@ -26,7 +26,7 @@ export class UsersService {
       throw new ConflictException('Phone number exists');
     }
 
-    const { password, resetTokenHash, resetToken, tempPassword } = await this.prepareCreds();
+    const { password, resetTokenHash, resetToken, tempPassword } = await this.prepareCreds(dto.password);
     const user = this.repo.create({
       ...dto,
       password,
@@ -55,8 +55,8 @@ export class UsersService {
     return saved;
   }
 
-  private async prepareCreds() {
-    const tempPassword = crypto.randomBytes(12).toString('hex');
+  private async prepareCreds(seedPassword?: string) {
+    const tempPassword = seedPassword || crypto.randomBytes(12).toString('hex');
     const password = await bcrypt.hash(tempPassword, 10);
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');

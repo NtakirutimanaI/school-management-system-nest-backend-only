@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseUUIDPipe, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody } from '@nestjs/swagger';
 import { TeachersService } from './teachers.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
@@ -14,6 +14,13 @@ import { UserRole } from '../common/enums/user-role.enum';
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class TeachersController {
   constructor(private readonly service: TeachersService) { }
+
+  @Get('me')
+  @Roles(UserRole.TEACHER)
+  @ApiOperation({ summary: 'Get my teacher profile (classes, subjects)' })
+  getProfile(@Request() req) {
+    return this.service.findByUserId(req.user.sub);
+  }
 
   @Post() @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
   create(@Body() dto: CreateTeacherDto) { return this.service.create(dto); }

@@ -11,6 +11,7 @@ import {
 import { Teacher } from '../../teachers/entities/teacher.entity';
 import { Student } from '../../students/entities/student.entity';
 import { Enrollment } from '../../enrollments/entities/enrollment.entity';
+import { EducationCategory, EducationLevel } from '../../common/enums/education-system.enum';
 
 @Entity('classes')
 export class Class {
@@ -23,8 +24,23 @@ export class Class {
   @Column({ nullable: true })
   section: string;
 
-  @Column({ name: 'grade_level' })
-  gradeLevel: number;
+  @Column({
+    type: 'enum',
+    enum: EducationCategory,
+    name: 'education_category',
+    default: EducationCategory.REB,
+  })
+  educationCategory: EducationCategory;
+
+  @Column({
+    type: 'enum',
+    enum: EducationLevel,
+    name: 'education_level',
+  })
+  educationLevel: EducationLevel;
+
+  @Column({ nullable: true })
+  stream: string; // e.g., 'A', 'B', 'SOD', 'NETWORKING'
 
   @Column({ name: 'academic_year' })
   academicYear: string;

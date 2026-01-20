@@ -8,8 +8,9 @@ export function setupSwagger(app: INestApplication) {
     .setVersion('1.0.0')
     .setContact('Academic Office', 'https://school-cloud.com', 'admin@school-cloud.com')
     .setLicense('MIT', 'https://opensource.org/licenses/MIT')
-    .addServer('http://localhost:3000', 'Local')
+    .addServer('http://localhost:3001', 'Local')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', name: 'JWT', in: 'header' }, 'JWT-auth')
+    .addBearerAuth() // for default @ApiBearerAuth() usage
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

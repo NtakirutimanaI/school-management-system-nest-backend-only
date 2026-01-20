@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Teacher } from '../../teachers/entities/teacher.entity';
 import { Exam } from '../../exams/entities/exam.entity';
+import { EducationCategory } from '../../common/enums/education-system.enum';
 
 @Entity('subjects')
 export class Subject {
@@ -20,6 +21,17 @@ export class Subject {
 
   @Column({ unique: true })
   code: string;
+
+  @Column({
+    type: 'enum',
+    enum: EducationCategory,
+    name: 'education_category',
+    default: EducationCategory.REB,
+  })
+  educationCategory: EducationCategory;
+
+  @Column({ name: 'is_module', default: false })
+  isModule: boolean; // True for TVET modules
 
   @Column({ nullable: true })
   description: string;

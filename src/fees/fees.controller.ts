@@ -23,6 +23,7 @@ export class FeesController {
   createFee(@Body() dto: CreateFeeDto) { return this.service.createFee(dto); }
 
   @Get()
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.PARENT, UserRole.STUDENT)
   findAllFees() { return this.service.findAllFees(); }
 
   @Get(':id')
@@ -51,6 +52,7 @@ export class FeesController {
   updatePayment(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdatePaymentDto) { return this.service.updatePayment(id, dto); }
 
   @Get('status/:studentId')
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.PARENT, UserRole.STUDENT)
   getStudentFeeStatus(@Param('studentId', ParseUUIDPipe) id: string, @Query('academicYear') y: string) {
     return this.query.getStudentStatus(id, y);
   }

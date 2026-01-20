@@ -10,7 +10,7 @@ export class TeachersService {
   constructor(
     @InjectRepository(Teacher)
     private readonly teacherRepository: Repository<Teacher>,
-  ) {}
+  ) { }
 
   async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
     const teacher = this.teacherRepository.create(createTeacherDto);
@@ -37,7 +37,7 @@ export class TeachersService {
   async findByUserId(userId: string): Promise<Teacher | null> {
     return this.teacherRepository.findOne({
       where: { userId },
-      relations: ['user', 'subjects'],
+      relations: ['user', 'subjects', 'classesAsTeacher'],
     });
   }
 
